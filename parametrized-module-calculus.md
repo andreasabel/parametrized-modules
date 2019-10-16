@@ -9,17 +9,18 @@
 - Patterns        p ::= c xs
 - Universes       Typeᵢ
 - Terms           t,u,v,A,B
-- Telescopes      Γ,Δ
+- Telescopes      Δ
+- Context         Γ ::= Δs
 
 - Declarations d
 
     * Parameterized module
 
-        module M Γ where ds
+        module M Δ where ds
 
     * Simple datatypes (no parameter nor indices)
 
-        data D where cs Γs
+        data D where cs Δs
 
     * Aliases
 
@@ -32,20 +33,20 @@
 
     * Instantiation
 
-        module N Γ = M ts
+        module N Δ = M ts
 
       This statement can be interpreted in two different ways:
 
       1. new, deeply copying definitions (even pattern matching defs)
       2. old, like Agda does now, just creating aliases:
-         for f in M create N.f Γ = M.f ts (and recursively for nested modules).
+         for f in M create N.f Δ = M.f ts (and recursively for nested modules).
 
 # Semantics
 
 Have the usual reduction rules (small-step semantics).
 For 1. add equalities
 
-   N.f Γ = M.f ts
+   N.f Δ = M.f ts
 
 that only fire during conversion checking, not weak head evaluation.
 For 2. this is the only reduction rule needed to facilitate
