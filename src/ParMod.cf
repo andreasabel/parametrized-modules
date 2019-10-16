@@ -1,0 +1,90 @@
+-- A labelled BNFC grammar (to be processed with BNFC)
+-- describing parametrized modules in Agda syntax.
+-- Andreas, 2019-10-16
+
+-- A program is a top-level module containing a list of declarations.
+
+Prg.   Program ::= "module" Name RTel "where" "{" Decls "}" ;
+
+layout "where"  ;
+
+-- Declarations are parsed as snoc-lists.
+
+DNil.  Decls ::=                ;
+DSnoc. Decls ::= Decls ";" Decl ;
+dSg.   Decls ::= Decl           ;
+
+define dSg d = DSnoc DNil d     ;
+
+-- Declarations.
+
+DMod.    Decl ::= "module" Name RTel "where" "{" Decls "}" ;
+DInst.   Decl ::= "module" Name RTel "=" QName [Expr2] ;
+DData.   Decl ::= "data" Name "where" "{" [Constr] "}" ;
+DDataW.  Decl ::= "data" Name ":" Expr "where" "{" [TSig] "}" ;
+DSig.    Decl ::= Name ":" Expr ;
+DClause. Decl ::= Name [Pattern1] "=" Expr ;
+
+-- Telescopes.
+
+TNil.  RTel ::= ;
+TSnoc. RTel ::= RTel Bind ;
+
+Bind.  Bind ::= "(" [Name] ":" Expr ")" ;
+
+terminator nonempty Bind "" ;
+
+-- NSg.   Names ::= Name ;
+-- NSnoc. Names ::= Names Name ;
+-- NCons. Names ::= Name Names ;
+
+terminator nonempty Name "" ;
+
+-- Constructors.
+
+Constr.   Constr ::= Name RTel;
+separator Constr ";" ;
+
+-- Type signatures.
+
+TSig.     TSig ::= [Name] ":" Expr ;
+separator TSig ";" ;
+
+-- Patterns.
+
+PId.   Pattern1 ::= QName ;
+PApp.  Pattern  ::= Pattern Pattern1 ;
+
+coercions Pattern 1 ;
+terminator Pattern1 "" ;
+
+-- Exprs
+
+EId.   Expr2 ::= QName ;            -- Atoms
+EApp.  Expr1 ::= Expr1 Expr2;       -- Applications
+EArr.  Expr  ::= Expr1 "→" Expr;    -- Function types
+EPi.   Expr  ::= [Bind] "→" Expr;
+
+coercions Expr 2 ;
+terminator Expr2 "" ;
+
+-- Qualified identifiers: non-empty lists of identifiers.
+-- Should not allow spaces around the ".", but this is not easily expressed in BNFC.
+
+QName.   QName ::= Name           ;  -- Last identifier (unqualified).
+Qual.    QName ::= Name "." QName ;  -- Qualification.
+
+-- Identifiers.
+
+-- token Name (char - [ "-(){};.@\" \n\t" ]) + ;  -- The released BNFC does not understand \n and \t
+token Name (char - [ "-(){};.@\" \n\r\t\f" ]) + ;
+  -- Both too liberal and too restrictive:
+  -- Only excluding Agdas reserved symbols (too liberal).
+  -- Excluding "-" for the sake of comments (too restrictive).
+
+-- Comments.
+
+comment "--"      ;  -- line comment
+comment "{-" "-}" ;  --  non-nested block comment
+
+-- EOF

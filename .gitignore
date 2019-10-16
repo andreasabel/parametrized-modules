@@ -1,3 +1,10 @@
+## Agda
+*.agdai
+
+## Haskell
+*.hi
+*.o
+
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -240,3 +247,8 @@ TSWLatexianTemp*
 
 # generated if using elsarticle.cls
 *.spl
+
+
+/src/MAlonzo/
+/src/ParMod/
+/src/Main
