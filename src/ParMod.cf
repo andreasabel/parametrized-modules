@@ -20,10 +20,12 @@ define dSg d = DSnoc DNil d     ;
 
 DMod.    Decl ::= "module" Name RTel "where" "{" Decls "}" ;
 DInst.   Decl ::= "module" Name RTel "=" QName [Expr2] ;
-DData.   Decl ::= "data" Name "where" "{" [Constr] "}" ;
-DDataW.  Decl ::= "data" Name ":" Expr "where" "{" [TSig] "}" ;
+DData.   Decl ::= "data" Name ":" Expr "where" "{" [TSig] "}" ;
 DSig.    Decl ::= Name ":" Expr ;
 DClause. Decl ::= Name [Pattern1] "=" Expr ;
+
+-- Not Agda compatible.
+-- DData.   Decl ::= "data" Name "where" "{" [Constr] "}" ;
 
 -- Telescopes.
 
@@ -40,10 +42,10 @@ terminator nonempty Bind "" ;
 
 terminator nonempty Name "" ;
 
--- Constructors.
-
-Constr.   Constr ::= Name RTel;
-separator Constr ";" ;
+-- -- Constructors.
+--
+-- Constr.   Constr ::= Name RTel;
+-- separator Constr ";" ;
 
 -- Type signatures.
 
