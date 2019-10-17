@@ -2,6 +2,8 @@ module Example1 where
 
   data Empty : Set where
 
+{-
+
   data Unit : Set where
     unit : Unit
 

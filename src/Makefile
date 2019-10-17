@@ -6,15 +6,18 @@
 
 # Default goal.
 
-test : ParMod/Test test/Example1.agda Makefile
-	ParMod/Test test/Example1.agda
+test : ./Main test/Example1.agda Makefile
+	./Main test/Example1.agda
 
 all : ParMod/Test Main test
 
+Main : Main.hs Syntax/Internal.hs TypeChecker.hs ParMod/ErrM.hs ParMod/Lex.hs ParMod/Par.hs ParMod/Print.hs
+	ghc --make $<
+
 # Rules for building the parser.
 
-ParMod/ErrM.hs ParMod/Lex.x ParMod/Print.hs ParMod/Par.y ParMod/Test.hs ParMod/AST.agda ParMod/Parser.agda ParMod/IOLib.agda ParMod/Main.agda : ParMod.cf
-	bnfc --haskell -d --agda ParMod.cf
+ParMod/ErrM.hs ParMod/Lex.x ParMod/Print.hs ParMod/Par.y ParMod/Test.hs ParMod/AST.agda ParMod/Parser.agda ParMod/IOLib.agda ParMod/Main.agda : ParMod.cf # Makefile
+	bnfc --haskell -d --string-token ParMod.cf
 
 %.hs : %.y
 	happy --ghc --coerce --array --info $<
@@ -25,8 +28,8 @@ ParMod/ErrM.hs ParMod/Lex.x ParMod/Print.hs ParMod/Par.y ParMod/Test.hs ParMod/A
 ParMod/Test : ParMod/Test.hs ParMod/ErrM.hs ParMod/Lex.hs ParMod/Par.hs ParMod/Print.hs
 	ghc --make $< -o $@
 
-Main : ParMod/Main.agda ParMod/AST.agda ParMod/Parser.agda ParMod/IOLib.agda ParMod/ErrM.hs ParMod/Lex.hs ParMod/Par.hs ParMod/Print.hs
-	agda --no-libraries --ghc --ghc-flag=-Wwarn $<
+AgdaParser : ParMod/Main.agda ParMod/AST.agda ParMod/Parser.agda ParMod/IOLib.agda ParMod/ErrM.hs ParMod/Lex.hs ParMod/Par.hs ParMod/Print.hs
+	agda --no-libraries --ghc --ghc-flag=-Wwarn --ghc-flag=-o$@ $<
 
 # Rules for cleaning generated files.
 

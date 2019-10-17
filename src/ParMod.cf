@@ -4,37 +4,39 @@
 
 -- A program is a top-level module containing a list of declarations.
 
-Prg.   Program ::= "module" Name RTel "where" "{" Decls "}" ;
+Prg.   Program ::= "module" Name [Bind] "where" "{" [Decl] "}" ;
 
 layout "where"  ;
 
--- Declarations are parsed as snoc-lists.
-
-DNil.  Decls ::=                ;
-DSnoc. Decls ::= Decls ";" Decl ;
-dSg.   Decls ::= Decl           ;
-
-define dSg d = DSnoc DNil d     ;
+-- -- Declarations are parsed as snoc-lists.
+--
+-- DNil.  Decls ::=                ;
+-- DSnoc. Decls ::= Decls ";" Decl ;
+-- dSg.   Decls ::= Decl           ;
+--
+-- define dSg d = DSnoc DNil d     ;
 
 -- Declarations.
 
-DMod.    Decl ::= "module" Name RTel "where" "{" Decls "}" ;
-DInst.   Decl ::= "module" Name RTel "=" QName [Expr2] ;
+DMod.    Decl ::= "module" Name [Bind] "where" "{" [Decl] "}" ;
+DInst.   Decl ::= "module" Name [Bind] "=" QName [Expr2] ;
 DData.   Decl ::= "data" Name ":" Expr "where" "{" [TSig] "}" ;
 DSig.    Decl ::= Name ":" Expr ;
 DClause. Decl ::= Name [Pattern1] "=" Expr ;
+
+separator Decl ";" ;
 
 -- Not Agda compatible.
 -- DData.   Decl ::= "data" Name "where" "{" [Constr] "}" ;
 
 -- Telescopes.
 
-TNil.  RTel ::= ;
-TSnoc. RTel ::= RTel Bind ;
+-- TNil.  RTel ::= ;
+-- TSnoc. RTel ::= RTel Bind ;
 
 Bind.  Bind ::= "(" [Name] ":" Expr ")" ;
 
-terminator nonempty Bind "" ;
+terminator Bind "" ;
 
 -- NSg.   Names ::= Name ;
 -- NSnoc. Names ::= Names Name ;
@@ -65,7 +67,7 @@ terminator Pattern1 "" ;
 EId.   Expr2 ::= QName ;            -- Atoms
 EApp.  Expr1 ::= Expr1 Expr2;       -- Applications
 EArr.  Expr  ::= Expr1 "→" Expr;    -- Function types
-EPi.   Expr  ::= [Bind] "→" Expr;
+EPi.   Expr  ::= Bind [Bind] "→" Expr;
 
 coercions Expr 2 ;
 terminator Expr2 "" ;
